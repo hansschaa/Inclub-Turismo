@@ -10,6 +10,8 @@ public class ViewController : MonoBehaviour
 
 	//Global Variables
 	public static bool _fromChapter;
+	[Header("Controllers")]
+	public GameObject _soundController;
 	
 	//Views
 	[Header("Views")]
@@ -23,6 +25,11 @@ public class ViewController : MonoBehaviour
 	public GameObject _howHappyTraveler;
 	public GameObject _howChapterListView;
 
+	public GameObject _playText3D;
+
+	public Color32 colorText;
+	public Color32 colorTextAlpha;
+
 
 
 	//Buttons
@@ -34,6 +41,7 @@ public class ViewController : MonoBehaviour
 	[Header("Variables")]
 	public float _delayChapter;
 	public Camera mainCamera;
+	public GameObject _globalPointsUI;
 	
 
 	public GameObject _scrollViewMesagges;
@@ -44,25 +52,13 @@ public class ViewController : MonoBehaviour
 		if(ViewController._fromChapter)
 		{
 			ViewController._fromChapter = false;
-			this.updateView(_chapterListView, _titleScreenView, true);
+			this.updateView(_chapterListView, _titleScreenView, true,true);
 		}
 
 		if(this._titleScreenView.activeInHierarchy)
 		{
 			this._backButton.SetActive(false);
 		}
-	}
-
-	/// <summary>
-	/// Update is called every frame, if the MonoBehaviour is enabled.
-	/// </summary>
-	void Update()
-	{
-		if (Input.touchCount > 1 || Input.GetMouseButton(0)) 
-		{
-			if(_introductionView.activeInHierarchy)
-				this.updateView(_chapterListView, _introductionView,true);
-		}	
 	}
 
 	public void pressHappyTraveler()
@@ -75,8 +71,8 @@ public class ViewController : MonoBehaviour
 		TransitionKit.instance.transitionWithDelegate( fader );
 		StartCoroutine(waitThenCallback(0.5f, () => 
         { 
-			this.updateView(this._happyTraveler,this._titleScreenView,true);
-			this._scrollViewMesagges.SetActive(false);
+			this.updateView(this._happyTraveler,this._titleScreenView,true,false);
+			// this._scrollViewMesagges.SetActive(false);
 
 			StartCoroutine(waitThenCallback(0.5f, () => 
 			{ 
@@ -89,7 +85,7 @@ public class ViewController : MonoBehaviour
 	{
 		if(this._introductionView.activeInHierarchy)
 		{
-			this.updateView(this._titleScreenView,this._introductionView,false);
+			this.updateView(this._titleScreenView,this._introductionView,false,true);
 		}
 
 		else if(this._happyTraveler.activeInHierarchy)
@@ -102,7 +98,7 @@ public class ViewController : MonoBehaviour
 			TransitionKit.instance.transitionWithDelegate( fader );
 			StartCoroutine(waitThenCallback(0.5f, () => 
 			{ 
-				this.updateView(this._titleScreenView,this._happyTraveler,false);
+				this.updateView(this._titleScreenView,this._happyTraveler,false,true);
 				this._uiAnimationController.GetComponent<UIAnimationController>().outHappyTravelerView();
 
 			}));
@@ -110,23 +106,23 @@ public class ViewController : MonoBehaviour
 
 		else if(this._chapterListView.activeInHierarchy)
 		{
-			this.updateView(this._titleScreenView,this._chapterListView,false);
+			this.updateView(this._titleScreenView,this._chapterListView,false,true);
 		}
 	}
 
 	public void pressSocialNetworkButton()
 	{
+		this._playText3D.GetComponent<TextMesh>().color = this.colorTextAlpha;
 		this._contactView.SetActive(true);
 	}	
 
 	public void pressPlayButton()
 	{
-		this.updateView(this._introductionView,this._titleScreenView, false);
+		this.updateView(this._introductionView,this._titleScreenView, false,false);
 	}
 
 	public void pressChapterButton(int chapterNumber)
 	{
-		// this.updateView(this._loadingView, this._chapterListView, false);
 		var fader = new FadeTransition()
 		{
 			fadedDelay = 0.5f,
@@ -135,7 +131,7 @@ public class ViewController : MonoBehaviour
 		TransitionKit.instance.transitionWithDelegate( fader );
 		StartCoroutine(waitThenCallback(0.5f, () => 
 		{ 
-			this.updateView(this._loadingView,this._chapterListView,false);
+			this.updateView(this._loadingView,this._chapterListView,false,false);
 			StartCoroutine(waitThenCallback(3f, () => 
 			{ 
 				fader = new FadeTransition()
@@ -159,18 +155,19 @@ public class ViewController : MonoBehaviour
 		Application.Quit();
 	}
 
-	public void updateView(GameObject activeView, GameObject inactiveView, bool backButtonBool)
+	public void pressNextButton()
 	{
-		
+		this.updateView(this._chapterListView, this._introductionView,true,true);
+	}
+
+	public void updateView(GameObject activeView, GameObject inactiveView, bool backButtonBool, bool globalPointsUIBool)
+	{
 		activeView.SetActive(true);
 		inactiveView.SetActive(false);
 
-		if(backButtonBool)
-			this._backButton.SetActive(true);
+		this._backButton.SetActive(backButtonBool);
 
-		else
-			this._backButton.SetActive(false);
-
+		this._globalPointsUI.SetActive(globalPointsUIBool);
 	}
 
 	private IEnumerator waitThenCallback(float time, Action callback)
@@ -181,6 +178,11 @@ public class ViewController : MonoBehaviour
 
 	public void pressClose(GameObject gameObjectClose)
 	{
+		if(this._titleScreenView.activeInHierarchy)
+		{
+			this._playText3D.GetComponent<TextMesh>().color = this.colorText;
+		}
+
 		gameObjectClose.SetActive(false);
 	}
 
@@ -189,6 +191,8 @@ public class ViewController : MonoBehaviour
 		if(this._titleScreenView.activeInHierarchy)
 		{
 			this._howTitleScreenView.SetActive(true);
+			this._playText3D.GetComponent<TextMesh>().color = this.colorTextAlpha;
+			
 		}
 
 		else if(this._happyTraveler.activeInHierarchy)
@@ -202,5 +206,9 @@ public class ViewController : MonoBehaviour
 		}
 	}
 
+	public void playSound(int soundEffect)
+	{
+		this._soundController.GetComponent<SoundController>().playEffectSound(soundEffect);
+	}
 	
 }

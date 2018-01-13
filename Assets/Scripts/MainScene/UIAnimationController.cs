@@ -22,6 +22,8 @@ public class UIAnimationController : MonoBehaviour
 	public Transform _pencil;
 	public RectTransform _contentScrollView;
 
+	public Transform _woodTable;
+
 	[Header("Variables")]
 	public GameObject _viewController; 
 
@@ -67,6 +69,11 @@ public class UIAnimationController : MonoBehaviour
 		{
 			_viewController.GetComponent<ViewController>().pressHowButton();
 		}
+
+		else if(buttonTransform.gameObject.name.Equals("InclubFelizButton"))
+		{
+			_viewController.GetComponent<ViewController>().pressHappyTraveler();
+		}
 	}
 
 	public void inHappyTravelerView()
@@ -83,11 +90,12 @@ public class UIAnimationController : MonoBehaviour
 
 	public void outHappyTravelerView()
 	{
-		this._book.transform.localScale= new Vector3(1,1,1);
-		this._pencil.transform.localScale= new Vector3(1,1,1);
-		this._pencil.transform.localPosition = new Vector3(94,-172,0);
+		// this._book.transform.localScale= new Vector3(1,1,1);
+		// this._pencil.transform.localScale= new Vector3(1,1,1);
+		// this._pencil.transform.localPosition = new Vector3(94,-172,0);
+		// this._woodTable.transform.localScale = new Vector3(1,1,1);
 		// this._contentScrollView.transform.position = new Vector3(this._contentScrollView.transform.position.x, -154 );
-		this._scrollView.SetActive(false);
+		// this._scrollView.SetActive(false);
 	}
 
 
