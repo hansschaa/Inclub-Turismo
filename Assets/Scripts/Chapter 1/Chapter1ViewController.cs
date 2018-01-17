@@ -5,55 +5,43 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Prime31.TransitionKit;
+using DG.Tweening;
 
 public class Chapter1ViewController : MonoBehaviour 
 {
+	
+	[Header("Controllers")]
+	public GameObject _mechanicController;
+	public GameObject _soundController;
+	public GameObject _animationsController;
+
 
 	[Header("Sub Chapters")]
 	public GameObject[] _subChaptersView;
 	
 
-	[Header("Other Canvas")]
-	public GameObject _canvasOptions;
+	[Header("Final View")]
 	public GameObject _finalChapterUI;
-	public Text _currentPointsText;
+	public Text _wrongAnswersText;
+	public Text _rightAnswersText;
 	public Text _starsFinalChapterText;
 	public Text _performanceText;
+	public Transform _starsGroup;
+	public Sprite _badStarImage;
+
+
+	[Header("Boss Panel View")]
 	public GameObject _bossPanel;
 	public Text _bossTextPanel;
 	public GameObject _fadeBoss;
 
-	[Header("Controllers")]
-	public GameObject _mechanicController;
-	public GameObject _soundController;
 
-
-	public String[] _bossFeedBack;
+	[Header("Other canvas elements")]
+	public Text _currentPointsText;
 	public GameObject _permanentElements;
-
-	/// <summary>
-	/// Start is called on the frame when a script is enabled just before
-	/// any of the Update methods is called the first time.
-	/// </summary>
-	void Start()
-	{
-		this._bossFeedBack = new String[6];
-		this.loadFeedBack();
-	}
-
-    public void pressOptionsButton()
-	{
-		this._canvasOptions.SetActive(true);
-	}
-
-	public void pressResumeButton()
-	{
-		this._canvasOptions.SetActive(false);
-	}
 
 	public void pressReturnToChapterButton()
 	{
-		// this._soundController.GetComponent<SoundController>().playEffectSound(0);
 		ViewController._fromChapter = true;
 		SceneManager.LoadScene(1);
 	}
@@ -76,24 +64,25 @@ public class Chapter1ViewController : MonoBehaviour
 		{
 			if(i==numberQuestionChapter)
 			{
-				this._bossTextPanel.text = _bossFeedBack[i];
+				this._bossTextPanel.text = BaseDeDatos._bossFeedBack[i];
 				break;
 			}
 		}
 		this._bossPanel.SetActive(true);
 	}
 
-   
-
-
-    public void updateFinalView(float promedio, int estrellas)
+    public void updateFinalView(float promedio, int estrellas, int wrongAnswers, int rightAnswers)
     {
 		this._permanentElements.SetActive(false);
 		this._subChaptersView[this._subChaptersView.Length-1].gameObject.SetActive(false);
 		this._finalChapterUI.SetActive(true);
-		this._starsFinalChapterText.text = "Lograste " + estrellas + " estrellas";
-		this._performanceText.text = "Rendimiento: " + promedio + "%"; 
+
+		this._animationsController.GetComponent<Animations>().showStars(_starsGroup,_badStarImage,estrellas);
+
+		this._rightAnswersText.text = "" + rightAnswers;
+		this._wrongAnswersText.text = "" + wrongAnswers;
     }
+
 
     public void loadNewView(int currentSubChapter)
     {
@@ -114,7 +103,6 @@ public class Chapter1ViewController : MonoBehaviour
 
     public void loadScene(int scene)
 	{
-		// this._soundController.GetComponent<SoundController>().playEffectSound(0);
 		SceneManager.LoadScene(scene);
 	}
 
@@ -122,15 +110,4 @@ public class Chapter1ViewController : MonoBehaviour
 	{
 		this._soundController.GetComponent<SoundController>().playEffectSound(soundEffect);
 	}
-
-
-    private void loadFeedBack()
-    {
-        this._bossFeedBack[0]="Al atender una persona en situación de discapacidad visual debemos presentarnos e indicar nuestro cargo.";
-		this._bossFeedBack[1]="Debemos utilizar un lenguaje concreto, que permita dar puntos de orientación o de referencia";
-		this._bossFeedBack[2]="FEEDBACK";
-		this._bossFeedBack[3]="FEEDBACK";
-		this._bossFeedBack[4]="FEEDBACK";
-		this._bossFeedBack[5]="FEEDBACK";
-    }
 }

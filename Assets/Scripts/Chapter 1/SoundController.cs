@@ -19,6 +19,7 @@ public class SoundController : MonoBehaviour
 
 	public void playEffectSound(int soundEffect)
 	{
+		
 		for(int i = 0 ; i< this._soundEffects.Length;i++)
 		{
 			if(soundEffect == i)
@@ -27,6 +28,11 @@ public class SoundController : MonoBehaviour
 				break;
 			}
 		}
+	}
+
+	public void setPitch(float pitch)
+	{
+		this.gameObject.GetComponent<AudioSource>().pitch = pitch;
 	}
 
 	

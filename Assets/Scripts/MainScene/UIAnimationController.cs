@@ -9,24 +9,19 @@ public class UIAnimationController : MonoBehaviour
 {
 	//Sequences
 	public Sequence _inHappyTravelerSequence;
-	
+	public Sequence _linkTextSequence;
 
 	[Header("ImagesUpButton")]
 	public Sprite _soundOnImage;
 	public Sprite _soundOffImage; 
 
 	[Header("HappyTravelerSceneTransforms")]
-	public Transform _book;
-	public Transform _woodTexture;
-	public GameObject _scrollView;
-	public Transform _pencil;
-	public RectTransform _contentScrollView;
-
-	public Transform _woodTable;
+	public RectTransform _computer;
+	public GameObject _fadeElements;
 
 	[Header("Variables")]
 	public GameObject _viewController; 
-
+	public Text spriteRandom;
 	public GameObject _mainCamera;
 	public void OnPressDownButton(Transform buttonTransform)
 	{
@@ -59,12 +54,6 @@ public class UIAnimationController : MonoBehaviour
 			_viewController.GetComponent<ViewController>().pressSocialNetworkButton();
 		}
 
-		else if(buttonTransform.gameObject.name.Equals("ExitButton"))
-		{
-			_viewController.GetComponent<ViewController>().pressExitButton();
-
-		}
-
 		else if(buttonTransform.gameObject.name.Equals("HowButton"))
 		{
 			_viewController.GetComponent<ViewController>().pressHowButton();
@@ -79,24 +68,23 @@ public class UIAnimationController : MonoBehaviour
 	public void inHappyTravelerView()
 	{
 		this._inHappyTravelerSequence = DOTween.Sequence();
+		this._inHappyTravelerSequence.Append(this._computer.DOScale(1.9f,1f));
+		this._inHappyTravelerSequence.Play().OnComplete(()=> this._fadeElements.SetActive(true));
+		this._inHappyTravelerSequence.Play();
 
-		this._inHappyTravelerSequence.Append(this._book.DOScale(2.2f,1));
-		this._inHappyTravelerSequence.Join(this._woodTexture.DOScale(1.5f,1));
-		this._inHappyTravelerSequence.Join(this._pencil.DOScale(2f,1));
-		this._inHappyTravelerSequence.Join(this._pencil.DOMove(Camera.main.ViewportToWorldPoint(new Vector2(1.5f,0)),1));
+		TweenParams tParms = new TweenParams().SetLoops(-1);
+		this._linkTextSequence = DOTween.Sequence();
+		this._linkTextSequence.Append(this.spriteRandom.DOFade(0f,0.2f)).AppendInterval(0.5f);
+		this._linkTextSequence.Append(this.spriteRandom.DOFade(1f,.2f)).AppendInterval(0.3f);
+		this._linkTextSequence.SetAs(tParms);
 
-		this._inHappyTravelerSequence.Play().OnComplete(()=> _scrollView.SetActive(true));
+		_linkTextSequence.Play();
 	}
 
 	public void outHappyTravelerView()
 	{
-		// this._book.transform.localScale= new Vector3(1,1,1);
-		// this._pencil.transform.localScale= new Vector3(1,1,1);
-		// this._pencil.transform.localPosition = new Vector3(94,-172,0);
-		// this._woodTable.transform.localScale = new Vector3(1,1,1);
-		// this._contentScrollView.transform.position = new Vector3(this._contentScrollView.transform.position.x, -154 );
-		// this._scrollView.SetActive(false);
+		this._computer.transform.localScale= new Vector3(1,1,1);
+		this._fadeElements.SetActive(false);
 	}
-
 
 }

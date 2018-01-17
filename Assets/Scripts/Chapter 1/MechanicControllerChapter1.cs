@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class MechanicControllerChapter1 : MonoBehaviour
 {
 	[Header("Controllers")]
 	public GameObject _chapter1ViewController;
 	public GameObject _soundController;
+	public GameObject _animationController;
+
 
 
 	[Header("SubChapters")]
@@ -16,28 +19,29 @@ public class MechanicControllerChapter1 : MonoBehaviour
 	public int _currentSubChapter;
 	public int _maxPoints;
 	public int _wrongAnswers;
-	public int[,] _rangosRendimiento;
+	public int _totallyQuestions;
 	
 	void Start()
 	{
 		this._wrongAnswers = 0;
 		this._maxPoints = 2;
-		this._rangosRendimiento = new int[5,3];
 		this._chapter1ViewController.GetComponent<Chapter1ViewController>().updateScoreText(_currentPoints,_maxPoints);
-		this.loadRangesPerformance();
 	}
 
     public void compareResults(int numeroSign, GameObject gameObjectEscene)
 	{
 		if(numeroSign == gameObjectEscene.GetComponent<ShapeController>()._espectedShape && gameObjectEscene.activeInHierarchy)
 		{
-			gameObjectEscene.transform.GetChild(gameObjectEscene.transform.childCount-1).gameObject.SetActive(true);
 			this._currentPoints++;
+			gameObjectEscene.GetComponent<ShapeController>().finishAnimation();
 			this._soundController.GetComponent<SoundController>().playResultAnswerSound(true);
+			this.changeTextView(gameObjectEscene);
+
 
 			if(this._currentPoints == this._maxPoints)
 			{
 				this._currentSubChapter++;
+				
 				if(this._currentSubChapter < this._subChaptersCount)
 				{
 					print("Cargando view");
@@ -59,14 +63,18 @@ public class MechanicControllerChapter1 : MonoBehaviour
 
 		else
 		{
+			if(!gameObjectEscene.GetComponent<ShapeController>()._wasWrongAnswered)
+			{
+				this._wrongAnswers++;
+				gameObjectEscene.GetComponent<ShapeController>()._wasWrongAnswered = true;
+			}
+				
 			this._soundController.GetComponent<SoundController>().playResultAnswerSound(false);
-			this._wrongAnswers++;
 			this._chapter1ViewController.GetComponent<Chapter1ViewController>().showBossPanel(gameObjectEscene.GetComponent<ShapeController>()._numberQuestionChapter);
 			gameObjectEscene.GetComponent<ShapeController>()._touchLine = false;
 		}
 		
 	}
-
     private void loadNewChapterData()
     {
         this._currentPoints=0;
@@ -83,7 +91,7 @@ public class MechanicControllerChapter1 : MonoBehaviour
 		if(performance<5)
 		{
 			stars= 0;
-			this._chapter1ViewController.GetComponent<Chapter1ViewController>().updateFinalView(performance, stars);
+			this._chapter1ViewController.GetComponent<Chapter1ViewController>().updateFinalView(performance, stars, this._wrongAnswers,this._totallyQuestions);
 		}
 
 		else
@@ -91,11 +99,11 @@ public class MechanicControllerChapter1 : MonoBehaviour
 			for(int i = 0 ; i < 5; i++)
 			{
 				print("entro al for");
-				if(performance >= this._rangosRendimiento[i,0] && performance <= this._rangosRendimiento[i,1])
+				if(performance >= BaseDeDatos._rangosRendimiento[i,0] && performance <= BaseDeDatos._rangosRendimiento[i,1])
 				{
 					
-					stars = this._rangosRendimiento[i,2];
-					this._chapter1ViewController.GetComponent<Chapter1ViewController>().updateFinalView(performance, stars);
+					stars = BaseDeDatos._rangosRendimiento[i,2];
+					this._chapter1ViewController.GetComponent<Chapter1ViewController>().updateFinalView(performance, stars, this._wrongAnswers,this._totallyQuestions);
 					print("backenf");
 					if(PlayerPrefs.GetInt("LocalStarsChapter1") < stars)
 					{
@@ -115,22 +123,21 @@ public class MechanicControllerChapter1 : MonoBehaviour
 		this._chapter1ViewController.GetComponent<Chapter1ViewController>().updateScoreText(_currentPoints,_maxPoints);
     }
 
-	private void loadRangesPerformance()
+	
+
+	private void changeTextView(GameObject gameObjectEscene)
     {
-		this._rangosRendimiento[0,0]= 5;
-		this._rangosRendimiento[0,1]= 25;
-		this._rangosRendimiento[0,2]= 1;
-		this._rangosRendimiento[1,0]= 25;
-		this._rangosRendimiento[1,1]= 50;
-		this._rangosRendimiento[1,2]= 2;
-		this._rangosRendimiento[2,0]= 50;
-		this._rangosRendimiento[2,1]= 75;
-		this._rangosRendimiento[2,2]= 3;
-		this._rangosRendimiento[3,0]= 75;
-		this._rangosRendimiento[3,1]= 99;
-		this._rangosRendimiento[3,2]= 4;
-		this._rangosRendimiento[4,0]= 99;
-		this._rangosRendimiento[4,1]= 100;
-		this._rangosRendimiento[4,2]= 5;
+		ShapeController shapeController = gameObjectEscene.GetComponent<ShapeController>();
+		Transform currentTransform = gameObjectEscene.transform;
+		currentTransform.Find("Sign").gameObject.SetActive(true);
+
+		if(shapeController.questionType ==  QuestionType.Type.StatementQuestion && shapeController._espectedShape==0)
+		{
+			this._animationController.GetComponent<Animations>().shakeObject(gameObjectEscene.transform);
+			currentTransform.Find("WrongTextMessage").gameObject.SetActive(false);
+			currentTransform.Find("RightTextMessage").gameObject.SetActive(true);
+			currentTransform.Find("Sign").gameObject.SetActive(true);
+		}
+
     }
 }

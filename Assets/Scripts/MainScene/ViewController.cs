@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Prime31.TransitionKit;
 
@@ -12,10 +13,12 @@ public class ViewController : MonoBehaviour
 	public static bool _fromChapter;
 	[Header("Controllers")]
 	public GameObject _soundController;
+	public GameObject _uiAnimationController;
 	
 	//Views
 	[Header("Views")]
 	public GameObject _titleScreenView;
+	public GameObject _exitPanelView;
 	public GameObject _contactView;
 	public GameObject _chapterListView;
 	public GameObject _introductionView;
@@ -24,11 +27,13 @@ public class ViewController : MonoBehaviour
 	public GameObject _howTitleScreenView;
 	public GameObject _howHappyTraveler;
 	public GameObject _howChapterListView;
-
 	public GameObject _playText3D;
 
-	public Color32 colorText;
-	public Color32 colorTextAlpha;
+	[Header("LoadingView")]
+	public Text _adviceLoadingText;
+
+
+
 
 
 
@@ -42,10 +47,12 @@ public class ViewController : MonoBehaviour
 	public float _delayChapter;
 	public Camera mainCamera;
 	public GameObject _globalPointsUI;
-	
+	public GameObject _doorTitleScreen;
+	public Color32 colorText;
+	public Color32 colorTextAlpha;
 
-	public GameObject _scrollViewMesagges;
-	public GameObject _uiAnimationController;
+	// public GameObject _scrollViewMesagges;
+
 
 	public void Start()
 	{
@@ -71,7 +78,7 @@ public class ViewController : MonoBehaviour
 		TransitionKit.instance.transitionWithDelegate( fader );
 		StartCoroutine(waitThenCallback(0.5f, () => 
         { 
-			this.updateView(this._happyTraveler,this._titleScreenView,true,false);
+			this.updateView(this._happyTraveler,this._titleScreenView,true,true);
 			// this._scrollViewMesagges.SetActive(false);
 
 			StartCoroutine(waitThenCallback(0.5f, () => 
@@ -106,6 +113,7 @@ public class ViewController : MonoBehaviour
 
 		else if(this._chapterListView.activeInHierarchy)
 		{
+			this._doorTitleScreen.GetComponent<Animator>().SetBool("Open", false);
 			this.updateView(this._titleScreenView,this._chapterListView,false,true);
 		}
 	}
@@ -118,7 +126,12 @@ public class ViewController : MonoBehaviour
 
 	public void pressPlayButton()
 	{
-		this.updateView(this._introductionView,this._titleScreenView, false,false);
+		this._doorTitleScreen.GetComponent<Animator>().SetBool("Open", true);
+		StartCoroutine(waitThenCallback(0.5f, () => 
+		{ 
+			this.updateView(this._introductionView,this._titleScreenView, false,false);
+			
+		}));
 	}
 
 	public void pressChapterButton(int chapterNumber)
@@ -131,9 +144,11 @@ public class ViewController : MonoBehaviour
 		TransitionKit.instance.transitionWithDelegate( fader );
 		StartCoroutine(waitThenCallback(0.5f, () => 
 		{ 
+			this._adviceLoadingText.text = BaseDeDatos._consejosLoading[UnityEngine.Random.Range(0,BaseDeDatos._consejosLoading.Length)];
 			this.updateView(this._loadingView,this._chapterListView,false,false);
-			StartCoroutine(waitThenCallback(3f, () => 
+			StartCoroutine(waitThenCallback(5f, () => 
 			{ 
+
 				fader = new FadeTransition()
 				{
 					fadedDelay = 0.5f,
@@ -148,6 +163,11 @@ public class ViewController : MonoBehaviour
 			}));
 
 		}));
+	}
+
+	public void openPanelAction(GameObject panelToOpen)
+	{
+		panelToOpen.SetActive(true);
 	}
 
 	public void pressExitButton()
@@ -209,6 +229,11 @@ public class ViewController : MonoBehaviour
 	public void playSound(int soundEffect)
 	{
 		this._soundController.GetComponent<SoundController>().playEffectSound(soundEffect);
+	}
+
+	public void openBrowserPageButton(String link)
+	{	
+		Application.OpenURL(link);
 	}
 	
 }

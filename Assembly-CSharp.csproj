@@ -101,8 +101,11 @@
      <Compile Include="Assets\Scripts\Chapter 1\GestureController.cs" />
      <Compile Include="Assets\Scripts\Chapter 1\LineRendererController.cs" />
      <Compile Include="Assets\Scripts\Chapter 1\MechanicControllerChapter1.cs" />
+     <Compile Include="Assets\Scripts\Chapter 1\QuestionType.cs" />
      <Compile Include="Assets\Scripts\Chapter 1\ShapeController.cs" />
      <Compile Include="Assets\Scripts\Chapter 1\SoundController.cs" />
+     <Compile Include="Assets\Scripts\Global\Animations.cs" />
+     <Compile Include="Assets\Scripts\Global\BaseDeDatos.cs" />
      <Compile Include="Assets\Scripts\MainScene\ConfigController.cs" />
      <Compile Include="Assets\Scripts\MainScene\SetupMainScene.cs" />
      <Compile Include="Assets\Scripts\MainScene\UIAnimationController.cs" />

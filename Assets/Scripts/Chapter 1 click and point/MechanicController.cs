@@ -14,7 +14,6 @@ public class MechanicController : MonoBehaviour
 
     //Variables
     private RaycastHit2D _hit;
-    private String[][] _answers;
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -22,18 +21,8 @@ public class MechanicController : MonoBehaviour
     /// </summary>
     void Start()
     {
-        this._answers = new String[4][];
-        this.loadAnswers();
         this._currentGO = null;
         this._chapterViewControllerObject = this._chapterViewController.GetComponent<ChapterViewController>();
-    }
-
-    private void loadAnswers()
-    {
-        this._answers[0][0] = "Letrero";
-        this._answers[0][1] = "Malo";
-        this._answers[0][2] = "Es malo lo que hiciste bla bla bla...";
-
     }
 
     public void resetVariables()
