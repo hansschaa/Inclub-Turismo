@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
-
+using System;
 
 public class UIAnimationController : MonoBehaviour 
 {
@@ -11,9 +11,16 @@ public class UIAnimationController : MonoBehaviour
 	public Sequence _inHappyTravelerSequence;
 	public Sequence _linkTextSequence;
 
+	[Header ("Reproductores")]
+	public AudioSource reproductorMusica;
+	public AudioSource reproductorSonido;
+
+
 	[Header("ImagesUpButton")]
 	public Sprite _soundOnImage;
 	public Sprite _soundOffImage; 
+
+	public Transform soundButton;
 
 	[Header("HappyTravelerSceneTransforms")]
 	public RectTransform _computer;
@@ -23,6 +30,23 @@ public class UIAnimationController : MonoBehaviour
 	public GameObject _viewController; 
 	public Text spriteRandom;
 	public GameObject _mainCamera;
+	/// <summary>
+	/// Start is called on the frame when a script is enabled just before
+	/// any of the Update methods is called the first time.
+	/// </summary>
+	void Start()
+	{
+		if(!ConfigController.Instance._audioEncendido)
+		{	
+			soundButton.gameObject.GetComponent<Image>().sprite = this._soundOffImage;
+		}
+
+		else
+		{
+			soundButton.gameObject.GetComponent<Image>().sprite = this._soundOnImage;
+		}
+	}
+
 	public void OnPressDownButton(Transform buttonTransform)
 	{
 		buttonTransform.DOScale(0.85f,0.1f);
@@ -39,13 +63,15 @@ public class UIAnimationController : MonoBehaviour
 			if(!ConfigController.Instance._audioEncendido)
 			{
 				buttonTransform.gameObject.GetComponent<Image>().sprite = this._soundOffImage;
-				this._mainCamera.GetComponent<AudioSource>().enabled = false;
+				reproductorMusica.volume = 0;
+				reproductorSonido.volume = 0;
 			}
 				
 			else
 			{
 				buttonTransform.gameObject.GetComponent<Image>().sprite = this._soundOnImage;
-				this._mainCamera.GetComponent<AudioSource>().enabled = true;
+				reproductorMusica.volume = 0.5f;
+				reproductorSonido.volume = 1f;
 			}		
 		}
 
@@ -63,15 +89,22 @@ public class UIAnimationController : MonoBehaviour
 		{
 			_viewController.GetComponent<ViewController>().pressHappyTraveler();
 		}
+
+		else if(buttonTransform.gameObject.name.Equals("CreditsButton"))
+		{
+
+			_viewController.GetComponent<ViewController>().pressCreditsButton();
+		}
 	}
 
 	public void inHappyTravelerView()
 	{
 		this._inHappyTravelerSequence = DOTween.Sequence();
 		this._inHappyTravelerSequence.Append(this._computer.DOScale(1.9f,1f));
-		this._inHappyTravelerSequence.Play().OnComplete(()=> this._fadeElements.SetActive(true));
-		this._inHappyTravelerSequence.Play();
+		this._inHappyTravelerSequence.Play().OnComplete(()=>  funcion());
 
+		
+		
 		TweenParams tParms = new TweenParams().SetLoops(-1);
 		this._linkTextSequence = DOTween.Sequence();
 		this._linkTextSequence.Append(this.spriteRandom.DOFade(0f,0.2f)).AppendInterval(0.5f);
@@ -81,7 +114,13 @@ public class UIAnimationController : MonoBehaviour
 		_linkTextSequence.Play();
 	}
 
-	public void outHappyTravelerView()
+    private void funcion()
+    {
+        this._fadeElements.SetActive(true);
+		this._viewController.GetComponent<ViewController>().loadMessages();
+    }
+
+    public void outHappyTravelerView()
 	{
 		this._computer.transform.localScale= new Vector3(1,1,1);
 		this._fadeElements.SetActive(false);

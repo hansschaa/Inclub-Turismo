@@ -5,6 +5,7 @@ using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Prime31.TransitionKit;
+using TMPro;
 
 public class ViewController : MonoBehaviour 
 {
@@ -27,20 +28,26 @@ public class ViewController : MonoBehaviour
 	public GameObject _howTitleScreenView;
 	public GameObject _howHappyTraveler;
 	public GameObject _howChapterListView;
+	public GameObject _creditstView;
 	public GameObject _playText3D;
 
 	[Header("LoadingView")]
 	public Text _adviceLoadingText;
 
-
-
-
-
+	[Header("Inclub Hotel")]
+	public RectTransform _contentScrollView;
+	public GameObject _messagePrefab;
+	private const int ELEMENTSPACE = 100;
+	public Sprite[] _portraitsMessageImages;
+	public bool _loadMessages;
+	public Sprite _entireStar;
+	
 
 	//Buttons
 	[Header("Buttons")]
 	public GameObject _backButton;
 	public GameObject _socialNetworkButton;
+	
 
 	//Variables
 	[Header("Variables")]
@@ -51,11 +58,21 @@ public class ViewController : MonoBehaviour
 	public Color32 colorText;
 	public Color32 colorTextAlpha;
 
+	[Header("Buttons")]
+	public GameObject _notificationButton;
+
 	// public GameObject _scrollViewMesagges;
 
 
 	public void Start()
 	{
+
+		
+
+		this._notificationButton.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = PlayerPrefs.GetInt("notReadNotifications").ToString();
+
+		this._loadMessages = false;
+
 		if(ViewController._fromChapter)
 		{
 			ViewController._fromChapter = false;
@@ -68,8 +85,17 @@ public class ViewController : MonoBehaviour
 		}
 	}
 
-	public void pressHappyTraveler()
+    public void pressCreditsButton()
+    {
+		this._playText3D.GetComponent<TextMesh>().color = this.colorTextAlpha;
+        this._creditstView.SetActive(true);
+    }
+
+    public void pressHappyTraveler()
 	{
+
+		this._notificationButton.GetComponent<Button>().interactable = false;
+
 		var fader = new FadeTransition()
 		{
 			fadedDelay = 0.2f,
@@ -78,17 +104,57 @@ public class ViewController : MonoBehaviour
 		TransitionKit.instance.transitionWithDelegate( fader );
 		StartCoroutine(waitThenCallback(0.5f, () => 
         { 
-			this.updateView(this._happyTraveler,this._titleScreenView,true,true);
-			// this._scrollViewMesagges.SetActive(false);
+			if(this._titleScreenView.activeInHierarchy)
+				this.updateView(this._happyTraveler,this._titleScreenView,true,true);
+
+			else if(this._chapterListView.activeInHierarchy)
+			{
+				SetupMainScene.desdeChapterList = true;
+				this.updateView(this._happyTraveler,this._chapterListView,true,true);
+			}
+				
+
 
 			StartCoroutine(waitThenCallback(0.5f, () => 
 			{ 
 				this._uiAnimationController.GetComponent<UIAnimationController>().inHappyTravelerView();
+				
 			}));
 		}));
 	}
 
-	public void pressBackButton()
+    public void loadMessages()
+    {
+		if(!this._loadMessages)
+		{
+			PlayerPrefs.SetInt("notReadNotifications",0);
+			this._notificationButton.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = PlayerPrefs.GetInt("notReadNotifications").ToString();
+
+			this._loadMessages = true;
+			SaveLoad.Load();
+			if(SaveLoad.savedMessages.Count!=0)
+			{
+				for(int i = 0 ; i < SaveLoad.savedMessages.Count; i++)
+				{
+					GameObject mensaje = Instantiate(this._messagePrefab, this._contentScrollView.transform.position, Quaternion.identity, this._contentScrollView) as GameObject;
+					mensaje.transform.Find("MessageText").gameObject.GetComponent<TextMeshProUGUI>().text = SaveLoad.savedMessages[i]._message;
+					mensaje.transform.Find("PerfilImage").gameObject.GetComponent<Image>().sprite = this._portraitsMessageImages[SaveLoad.savedMessages[i]._portraitImageIndex];
+					mensaje.transform.Find("DateText").gameObject.GetComponent<TextMeshProUGUI>().text = SaveLoad.savedMessages[i]._dateMessage.ToString();
+					int stars = SaveLoad.savedMessages[i]._starsMessage;
+					Transform starsGroup = mensaje.transform.Find("StarsGroup").gameObject.transform;
+					
+					for(int j = 0 ; j < stars ; j++)
+					{
+						starsGroup.GetChild(j).gameObject.GetComponent<Image>().sprite = this._entireStar;
+					}
+
+					this._contentScrollView.sizeDelta+= new Vector2(0, ELEMENTSPACE);
+				}
+			}
+		}	
+    }
+
+    public void pressBackButton()
 	{
 		if(this._introductionView.activeInHierarchy)
 		{
@@ -97,6 +163,7 @@ public class ViewController : MonoBehaviour
 
 		else if(this._happyTraveler.activeInHierarchy)
 		{
+			this._notificationButton.GetComponent<Button>().interactable = true;
 			var fader = new FadeTransition()
 			{
 				fadedDelay = 0.2f,
@@ -105,7 +172,17 @@ public class ViewController : MonoBehaviour
 			TransitionKit.instance.transitionWithDelegate( fader );
 			StartCoroutine(waitThenCallback(0.5f, () => 
 			{ 
-				this.updateView(this._titleScreenView,this._happyTraveler,false,true);
+				if(SetupMainScene.desdeChapterList)
+				{
+					this.updateView(this._chapterListView,this._happyTraveler,true,true);
+					SetupMainScene.desdeChapterList = false;
+				}
+
+				else
+				{
+					this.updateView(this._titleScreenView,this._happyTraveler,false,true);
+				}
+			
 				this._uiAnimationController.GetComponent<UIAnimationController>().outHappyTravelerView();
 
 			}));
@@ -199,6 +276,11 @@ public class ViewController : MonoBehaviour
 	public void pressClose(GameObject gameObjectClose)
 	{
 		if(this._titleScreenView.activeInHierarchy)
+		{
+			this._playText3D.GetComponent<TextMesh>().color = this.colorText;
+		}
+
+		else if(gameObjectClose.name.Equals("Credits"))
 		{
 			this._playText3D.GetComponent<TextMesh>().color = this.colorText;
 		}

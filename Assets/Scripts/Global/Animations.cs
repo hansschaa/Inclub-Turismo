@@ -53,7 +53,7 @@ public class Animations : MonoBehaviour
     private void soundBadStars()
     {
 		this._soundController.GetComponent<SoundController>().setPitch(1f);
-        this._soundController.GetComponent<SoundController>().playEffectSound(3);
+        this._soundController.GetComponent<SoundController>().playEffectSound(1);
 	
     }
 

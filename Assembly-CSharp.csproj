@@ -110,6 +110,8 @@
      <Compile Include="Assets\Scripts\MainScene\SetupMainScene.cs" />
      <Compile Include="Assets\Scripts\MainScene\UIAnimationController.cs" />
      <Compile Include="Assets\Scripts\MainScene\ViewController.cs" />
+     <Compile Include="Assets\Scripts\SaveLoad\Message.cs" />
+     <Compile Include="Assets\Scripts\SaveLoad\SaveLoad.cs" />
      <Compile Include="Assets\Scripts\SplashScreen\ResetGameData.cs" />
      <Compile Include="Assets\Scripts\SplashScreen\SplashScreenController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />

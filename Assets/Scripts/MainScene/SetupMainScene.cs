@@ -7,6 +7,15 @@ using TMPro;
 
 public class SetupMainScene : MonoBehaviour 
 {
+
+	//Global
+	static public bool desdeChapterList;
+
+	[Header ("Reproductores")]
+	public AudioSource reproductorMusica;
+	public AudioSource reproductorSonido;
+
+
 	[Header("Data About Points")]
 	public GameObject _localStarsText;
 	public GameObject _imageOverBackgroundPoints;
@@ -23,7 +32,17 @@ public class SetupMainScene : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		
+		SetupMainScene.desdeChapterList = false;
+		// PlayerPrefs.DeleteAll();
+		if(!ConfigController.Instance._audioEncendido)
+		{	
+
+			this.reproductorMusica.volume = 0;
+			this.reproductorSonido.volume = 0;
+		}
+
+		//Imprimiendo mensajes
+		Debug.Log(Application.persistentDataPath + "/savedMessages.gd");
 		this._totalLocalStars = 0;
 		GameObject currentChapter;
 		GameObject starGroup;
@@ -41,10 +60,10 @@ public class SetupMainScene : MonoBehaviour
 		}
 		
 
-		this._localStarsText.GetComponent<TextMeshProUGUI>().text = this._totalLocalStars+"/25";
+		this._localStarsText.GetComponent<TextMeshProUGUI>().text = this._totalLocalStars+"/20";
 
 		//
-		float widthBar = (this._totalLocalStars * 162)/25;
+		float widthBar = (this._totalLocalStars * 162)/20;
 		this._imageOverBackgroundPoints.GetComponent<RectTransform>().sizeDelta = new Vector2(widthBar,this._imageOverBackgroundPoints.GetComponent<RectTransform>().sizeDelta.y);
 	}
 }

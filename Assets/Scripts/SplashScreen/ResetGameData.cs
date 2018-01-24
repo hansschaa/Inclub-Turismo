@@ -8,7 +8,7 @@ public class ResetGameData : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		PlayerPrefs.SetInt("LocalStarsChapter1",0);
+		PlayerPrefs.DeleteAll();
 	}
 
 }

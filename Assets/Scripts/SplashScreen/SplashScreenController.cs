@@ -38,8 +38,8 @@ public class SplashScreenController : MonoBehaviour
 	
 		this._splashScreen = DOTween.Sequence();
 
-		this._alphaFadeTo0 = new Color32(0,0,0,0);
-		this._alphaFadeTo255 = new Color32(0,0,0,255);
+		this._alphaFadeTo0 = new Color32(255,255,255,0);
+		this._alphaFadeTo255 = new Color32(255,255,255,255);
 		this._alphaLogoTo0 = new Color32(255,255,255,0);
 		this._alphaLogoTo255 = new Color32(255,255,255,255);
 
