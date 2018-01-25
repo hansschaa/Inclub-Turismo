@@ -215,7 +215,7 @@ PlayerSettings:
   AndroidTargetDevice: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: C:/Users/hscha/Desktop/android2018.keystore
+  AndroidKeystoreName: C:/Users/hscha/Desktop/inclub key android/android2018.keystore
   AndroidKeyaliasName: olium
   AndroidTVCompatibility: 1
   AndroidIsGame: 1

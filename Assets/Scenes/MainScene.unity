@@ -627,6 +627,7 @@ MonoBehaviour:
   _creditstView: {fileID: 416887771}
   _playText3D: {fileID: 1354932347}
   _adviceLoadingText: {fileID: 1583757783}
+  _tiempoLoading: 3
   _contentScrollView: {fileID: 1160037093}
   _messagePrefab: {fileID: 1397229128273268, guid: dc4689c9c557f5d4c851c2ea7eee47bd,
     type: 2}

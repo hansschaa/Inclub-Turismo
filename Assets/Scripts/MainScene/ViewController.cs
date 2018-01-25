@@ -33,6 +33,7 @@ public class ViewController : MonoBehaviour
 
 	[Header("LoadingView")]
 	public Text _adviceLoadingText;
+	public float _tiempoLoading;
 
 	[Header("Inclub Hotel")]
 	public RectTransform _contentScrollView;
@@ -223,26 +224,29 @@ public class ViewController : MonoBehaviour
 		{ 
 			this._adviceLoadingText.text = BaseDeDatos._consejosLoading[UnityEngine.Random.Range(0,BaseDeDatos._consejosLoading.Length)];
 			this.updateView(this._loadingView,this._chapterListView,false,false);
-			StartCoroutine(waitThenCallback(5f, () => 
-			{ 
-
-				fader = new FadeTransition()
-				{
-					fadedDelay = 0.5f,
-					fadeToColor = Color.black
-				};
-
-				TransitionKit.instance.transitionWithDelegate( fader );
-				StartCoroutine(waitThenCallback(1f, () => 
-				{
-					SceneManager.LoadScene(chapterNumber);
-				}));
-			}));
-
+			StartCoroutine(asynchronousLoadingChapter(chapterNumber));
 		}));
 	}
 
-	public void openPanelAction(GameObject panelToOpen)
+    private IEnumerator asynchronousLoadingChapter(int chapterNumber)
+    {
+		AsyncOperation async = SceneManager.LoadSceneAsync(chapterNumber);
+		async.allowSceneActivation = false;
+
+		yield return new WaitForSeconds(3f);
+		var fader = new FadeTransition()
+		{
+			fadedDelay = 0.5f,
+			fadeToColor = Color.black
+		};
+
+		TransitionKit.instance.transitionWithDelegate( fader );
+		yield return new WaitForSeconds(1f);
+		print("Debria acctivar la cosa");
+		async.allowSceneActivation = true;
+    }
+
+    public void openPanelAction(GameObject panelToOpen)
 	{
 		panelToOpen.SetActive(true);
 	}
